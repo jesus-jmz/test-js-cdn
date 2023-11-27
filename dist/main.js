@@ -1,3 +1,4 @@
 $(document).ready(function(){
-    console.log("Jquery loaded and available")
-})
+    alert("CDN con Jquery");
+    console.log("Jquery loaded and available");
+});
