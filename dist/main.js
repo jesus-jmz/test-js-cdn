@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    console.log("sofIA CDN running")
+    console.log("Script running")
     // Load toggle button
     loadToggleBtn("body")
     // Load chatbot container
@@ -13,34 +13,23 @@ $(document).ready(function(){
     $("#close-btn").on("click", function(){
         $("#sofia-chatbot-container").toggle("slow")
     })
+
     // Send message on submit
     $("#chat").on("submit", function(e){
         e.preventDefault()
+        // Get message from input
         const userMessage = $("#message").val()
         // Not empty validation
         if(userMessage === "") return
-        sendMessage(userMessage)
-        // Show loading state
-        $("#loading").trigger("load")
-        // Send message
-        $.ajax({
-            url: "https://dummyjson.com/products/1",
-            type: "GET",
-            success: function(res){
-                // Hide loading state
-                $("#loading").hide()
-                sendReply(res.description)
-                enableSendForm()
-            }
-        })
-      
+        displayUserMessage(userMessage)
+        sendMessageToBot(userMessage)
     })
+
     // Loading state
     $("#loading").on("load", function(){
         $(this).show()
         disableSendForm()
     })
-    // Show loading
 })
 
 // Load toggle button to the selected element
@@ -83,21 +72,43 @@ const loadChatbotContainer = (element) => {
     $(element).append(chatbotContainer)
 }
 
-// Send user message
-const sendMessage = (message) => {
+// Display user message
+const displayUserMessage = (message) => {
     let messageElement = `<div class="message">${message}</div>`
     $("#chat-content").append(messageElement)
     $("#message").val("")
 }
 
-// Send reply element
-const sendReply = (response) => {
+// Send user message to API
+const sendMessageToBot = (message) => {
+    // Show loading state
+    $("#loading").trigger("load")
+    // Send message to API
+    $.ajax({
+        url: "https://dummyjson.com/products/1",
+        type: "GET",
+        data: message,
+        success: function(res){
+            // Hide loading state
+            $("#loading").hide()
+            displayBotResponse(res.description)
+            enableSendForm()
+            // Focus textbox
+            $("#message").focus()
+        }
+    })
+}
+
+// Display bot response element
+const displayBotResponse = (response) => {
     let replyElement = `
         <div class="reply">
             <img src="https://ik.imagekit.io/taf6zzl9d/chatbot/sofia.png?updatedAt=1701196091122" alt="bot-profile-picture">
             <p>${response}</p>
         </div>`
     $("#chat-content").append(replyElement)
+    // Scroll to bottom
+    scrollToBottom(600)
 }
 
 // Enable send form
@@ -114,4 +125,10 @@ const disableSendForm = () => {
     $("#message").prop("disabled", true)
     // Disable input
     $("#submit-btn").prop("disabled", true)
+}
+
+const scrollToBottom = (duration) => {
+    $("#chat-content").animate({
+        scrollTop: $("#chat-content").prop('scrollHeight')
+    }, duration);
 }
