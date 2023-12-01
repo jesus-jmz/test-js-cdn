@@ -1,5 +1,4 @@
 $(document).ready(function(){
-    console.log("Script running")
     // Load toggle button
     loadToggleBtn("body")
     // Load chatbot container
@@ -83,15 +82,22 @@ const displayUserMessage = (message) => {
 const sendMessageToBot = (message) => {
     // Show loading state
     $("#loading").trigger("load")
+    // Format message
+    question = { question: message }
     // Send message to API
     $.ajax({
-        url: "https://dummyjson.com/products/1",
-        type: "GET",
-        data: message,
+        url: "https://llmcanvas-production.up.railway.app/generate",
+        headers: { 
+            'Accept': 'application/json',
+            'Content-Type': 'application/json' 
+        },
+        type: "POST",
+        data: JSON.stringify(question),
+        dataType: "json",
         success: function(res){
             // Hide loading state
             $("#loading").hide()
-            displayBotResponse(res.description)
+            displayBotResponse(res.response)
             enableSendForm()
             // Focus textbox
             $("#message").focus()
